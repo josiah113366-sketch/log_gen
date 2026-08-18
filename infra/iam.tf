@@ -3,7 +3,7 @@
 # 1. ECR TASK policy 조회(어떤 것이 가능 -> xxx.amazon.com)
 data "aws_iam_policy_document" "ecs_tasks_assume" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
     principals {

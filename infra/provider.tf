@@ -3,9 +3,9 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Project = var.project_name
+      Project  = var.project_name
       ManageBy = "Terraform"
-      Purpose = "로그 제너레이터"
+      Purpose  = "로그 제너레이터"
     }
   }
 }
