@@ -31,9 +31,29 @@ variable "public_subnet_cidrs" {
 }
 
 # fargate task CPU
+variable "task_cpu" {
+  description = "cpu unit -> 512 == 0.5 vCPU"
+  type        = number
+  default     = 512
+}
 
 # fargate task MEMORY
+variable "task_memory" {
+  description = "memory Mib"
+  type        = number
+  default     = 1024
+}
 
 # cloudewatch log 보관 일수
+variable "log_retention_days" {
+  description = "cloudwatch log retention period"
+  type        = number
+  default     = 7
+}
 
 # ECS TASK가 ECR 이미지 사용 시 태그 -> latest(이 태그로 찾는다)
+variable "image_tag" {
+  description = "task가 정의될 때 참고하는 태그명, 가장 최신"
+  type        = string
+  default     = "latest"
+}
