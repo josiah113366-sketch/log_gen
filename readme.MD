@@ -67,8 +67,8 @@
 
 ## 지원 도메인 및 이벤트 정의
 - domain으로 카테고리 설정
-- 각 도메인들을 이벤트 비율 조정, 시간대별 발생량 조절, 주요 필드 설정, 각각에 대한 지연 시간 설정
-  - 실제 도메인의 인사이트를 반영하여 설계 (보다 데이터가 리얼해지지 않을까)
+- 각 도메인들을 이벤트 비율 조정, 시간대별 발생량 조절, 주요 필드 설정, 각각에 대한 지연시간 설정
+  - 실제 도메인의 인사이트를 반영하여 설계
 
 | DOMAIN | 주요 이벤트 예시 |
 |---|---|
@@ -78,21 +78,21 @@
 | `game` | login, session_heartbeat, match_started, match_finished, item_purchase, quest_completed |
 
 # 실제와 유사한 발생 간격
-- 고려 조건 
+- 고려 조건
   - 시간대별 가중치
   - 평일/주말 가중치
-  - 간헐적 등장 부스터(트래픽 상승)
-  - ... 
+  - 간혈적 등장 부스터(트레픽 상승)
+  - ...
 
 - 예
   - 이커머스 : 점심/저녁 시간대 증가, 주말 감소
-  - 금융 : 평일 주간 시간 증가, 주말 감소
-  - 스마트팩토리 : 24시간 비교적 일정, 교대/주말 변화
+  - 금융 : 평인 주간 시간 증가, 주말 감소
+  - 스마트팩토리 : 24시간 비교적 일정, 교대/주말 변화 
   - 게임 : 저녁/야간 피크, 주말 증가세
-  - 증가세를 적용하여 피크 시 트래픽을 5배, 10배 이렇게 가중할 수 있음
+  - 증가세를 적용하여 피크시 트레피을 10배, 5배 이렇게 가중 할수 있음
 
 # 오염 데이터
-- 비율 지정 -> 0.03 -> 각 이벤트에서 3% 비율로 오염 데이터 생산 -> ETL에서 clean 작업 처리
+- 비율 지정 => 0.03 => 각 이벤트에서 3% 비율로 오염 데이터 생산 => ETL에서 clean 작업 처리
 - 오염 유형
 ```
 missing_field
@@ -107,10 +107,12 @@ malformed_json
 ...
 ```
 
-# 로그 발생기의 데이터 파이프라인 상의 포지션 
+
+# 로그 발생기의 데이터 파이프라인상의 포지션
+```
 ```
               Data Source Simulator
-              Fargate + Python/Faker / E`L`K, E`F`K
+              Fargate + Python/Faker /  E`L`K, E`F`K
                       │ <- (다양한 출력 방향으로 전개)
     ┌─────────────────┼─────────────────┐
     │                 │                 │
@@ -123,7 +125,7 @@ File/Batch         AWS Stream       Event Stream
             Bronze Layer
                   │
           ETL / ELT Processing
-      Pandas / Polars / Spark <- AI에게 요청해서 구성, 챕터 4에서 진행
+      Pandas / Polars / Spark   <- Ai에게 요청해서 구성, 챕터 4에서 진행
                   │
                 Silver
                   │
@@ -131,26 +133,27 @@ File/Batch         AWS Stream       Event Stream
                   │
     Athena / OpenSearch / BI
 ```
+```
 
 # 제너레이터 구조 및 설치
 - 구조
 ```
 ~/generator
-  L app
+ L app
     L domains
-      L *.py         : 4개 도메인에 대한 로그 생성 메인 제너레이터 함수
-    L *.py           : main.py 로그 생성기 메인 코드, 각종 기능 처리
-  L Dockerfile       : 컨테이너 기반이 되는 이미지 생성용, ECR 푸시됨 
-  L requirements.txt : 필요 패키지 
+      L *.py        : 4개 도메인에 대한 로그 생성 메인 제너레이터 함수
+    L *.py          : main.py 로그 생성기 메인코드, 각종 기능 처리
+ L Dockerfile       : 컨테이너 기반이 되는 이미지 생성용, ECR 푸시됨
+ L requirements.txt : 필요 패키지
 ```
 
 - 설치
 ```
-# 루트 위치에서 
+# 루트 위치에서
 pip install -r generator/requirements.txt
 ```
 
-# 스크립트
+# 스크립트 
 - run-local.bat
 - 로컬 PC에서 로그 생성 (로컬 테스트)
 ```
@@ -158,7 +161,7 @@ pip install -r generator/requirements.txt
   scripts\run-local.bat [DOMAIN] [DURATION] [RPS] [CORRUPTION] [OUTPUT] [TIME_SCALE]
 
   # 샘플 
-  scripts\run-local.bat finance 4 5 0.05 both 1
+  scripts\run-local.bat finance 60 5 0.05 both 1
 
   # 해석
   finance 도메인 로그 생성
@@ -167,12 +170,13 @@ pip install -r generator/requirements.txt
   ↓
   평균 5 RPS 속도로 생성된다
   ↓
-  5% 오염 데이터를 구성
+  5% 오엽 데이터를 구성
   ↓
-  출력은 stdout, file, both(둘 다)
+  출력은 stdout, file, both(둘다)
   file은 output 폴더 내부에 기록
   ↓
   시간 배율 조절은 1
+
 ```
 
 - setup.bat
@@ -191,6 +195,8 @@ pip install -r generator/requirements.txt
   ECR에 latest 이미지 Push
 ```
 
+
+
 - run-generator.bat
   - AWS fargate에서 진행
 ```
@@ -206,7 +212,7 @@ pip install -r generator/requirements.txt
   ↓
   Fargate task 작동
   ↓
-  Docker Container 
+  Docker Container
   ↓
   Python 로그 생성기 작동
   ↓
