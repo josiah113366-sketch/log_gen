@@ -13,13 +13,13 @@
       - 콘솔
 
 # 인프라 구성
-- variables.tf
-- version.tf
-- provider.tf
-- locals.tf
-- vpc.tf
-- iam.tf
-- logs.tf
-- ecr.tf
-- ecs.tf
-- output.tf
+- variables.tf : 리전, 프로젝트명, CPU/Memory 등 정보 기술, 구성 조정
+- version.tf   : 
+- provider.tf  : 
+- locals.tf    : 공통값 가공, 태그, 전체 프로젝트 프리픽스
+- vpc.tf       : 전용 네트워크, VPC, subnet, IGW, Route Table, SG, AZ 가능
+- iam.tf       : Fargate가 ECR 이미지 획득, CloudWatch에 로그 기록 -> 권한 부여
+- logs.tf      : ECS 컨테이너 내에 (로그 생성기 존재) 발생되는 로그 -> 로그 그룹 지정
+- ecr.tf       : 로그 생성기 (파이썬 코드) -> Docker 이미지로 생성하여 저장할 저장소
+- ecs.tf       : ECS 클러스터와 Fargate Task Definition 등이 구동되는 실행 환경 제공 -> 1회성 (상시 운영 x)
+- output.tf    : 생성 후 각종 정보 출력
