@@ -154,3 +154,24 @@ aws logs tail "/ecs/de-ai-16-loggen" --follow --region "ap-northeast-2"
 
 # jsonl -> gzip 변경하여 저장 (실습)
 - 동일 로그 발생 -> 최종 결과물 GZIP으로 저장
+- 조치
+       - 수정
+       ```
+       # ~/infra/firehose.tf 
+       # 주석 처리
+       # compression_format = "UNCOMPRESSED" # 1차는 원본 지정, 활성화되지 않음
+       # 주석 해제
+       compression_format = "GZIP" # GZIP으로 압축
+       ```
+       - 인프라 반영
+       ```
+       terraform -chdir=infra apply
+       ```
+       - 로그 발생
+       ```
+       scripts/run-generator.bat game 5 5 0.05 1 ap-northeast-2 1
+       ```
+       - S3 확인
+       ```
+       de-ai-16-loggen-firehose-3-2026-08-20-15-30-35-8ec009b8-ed85-484b-be3a-29ec5db83adb.gz
+       ```
