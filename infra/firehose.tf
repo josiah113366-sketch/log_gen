@@ -8,7 +8,7 @@ resource "aws_kinesis_firehose_delivery_stream" "logs" {
   # 입력 소스 (키네시스 지정, 역할 설정)
   kinesis_source_configuration {
     kinesis_stream_arn = aws_kinesis_stream.logs.arn
-    role_arn = aws_iam_role.firehose.arn
+    role_arn           = aws_iam_role.firehose.arn
   }
 
   # 출력 대상
@@ -19,7 +19,7 @@ resource "aws_kinesis_firehose_delivery_stream" "logs" {
     role_arn = aws_iam_role.firehose.arn
 
     # 버퍼 관련 용량, 시간 설정
-    buffering_size = var.firehose_buffer_size # 1Mib
+    buffering_size     = var.firehose_buffer_size     # 1Mib
     buffering_interval = var.firehose_buffer_interval # 60초
 
     # 데이터를 모아둔 상태(버퍼링)에서 기록 -> 포멧
@@ -42,7 +42,7 @@ resource "aws_kinesis_firehose_delivery_stream" "logs" {
   }
 
   # 의존성
-  depends_on = [ 
+  depends_on = [
     # 해당 정책 입력/출력 액세스 권한 생성된 후에 firehose 생성되도록 설정
     aws_iam_role_policy.firehose
   ]
