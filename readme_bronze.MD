@@ -133,3 +133,21 @@ ecommerce       도메인
 ap-northeast-2  서울 리전
 1               Time Scale 1배
 ```
+- 명령
+- 25건 로그 생성
+- CloudWatch 로그 기록됨 (stdout 설정이 기본)
+- kinesis -> firehose -> s3 기록됨 (ecs 설정에 환경 변수로 세팅되어 있음)
+- s3에서 로그 발생 후 언제 확인 가능한가? -> 약간의 텀 존재함, 1분 이후 혹은 1Mib(firehose 버퍼링 조건) 초과 이후 확인 가능함
+```
+# 윈도우
+scripts/run-generator.bat 5 5 0.05 1 ap-northeast-2 1
+# 맥
+sh /scripts/run-generator.sh 5 5 0.05 1 ap-northeast-2 1
+```
+
+- 실시간 로그 확인
+```
+aws logs tail "/ecs/de-ai-16-loggen" --follow --region "ap-northeast-2"
+---
+2026-08-20T05:52:08.605000+00:00 generator/log-generator/33339d6f07564fefbdc2c747f015322d {"schema_version":"1.0","record_type":"application_log","event_id":"2e5556ff-3dbd-4832-a5e1-545b653d246f","trace_id":"ceccb7d8da9c4ec287a5fd9050f05a22","run_id":"loggen-1692416937-24008","occurred_at":"2026-08-20T14:52:08.605+09:00","generated_at_utc":"2026-08-20T05:52:08.605+00:00","domain":"ecommerce","event_type":"search","service":{"name":"commerce-api","environment":"simulation","instance_id":"sim-07"},"client":{"ip":"210.207.253.196","user_agent":"Mozilla/5.0 Chrome/151.0 Android/15","device_id":"ae097f9c71064994"},"request":{"method":"GET","path":"/api/search","request_bytes":419},"response":{"status_code":200,"latency_ms":68,"response_bytes":1331},"data":{"user_id":"usr_813419","session_id":"4ebde4632c9a4d238013","product_id":"prd_14420","category":"electronics","quantity":1,"unit_price":292300,"currency":"KRW","campaign":null,"keyword":"at","result_count":122}}
+```
