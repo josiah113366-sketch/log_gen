@@ -114,18 +114,46 @@ variable "flink_runtime_environment" {
   default     = "FLINK-1_20"
 }
 
+# Flink 어플리케이션의 병렬 구성 수
+# 현재는 1이 기본값, 최소 실행 단위
 variable "flink_parallelism" {
   description = "Initial Flink application parallelism"
   type        = number
   default     = 1
 }
+# KPU(Kinesis Processing Unit) 하나당 Parallel task 수 설정
+# 기본 컴퓨팅의 과금 단위
 variable "flink_parallelism_per_kpu" {
   description = "Flink parallel tasks per KPU"
   type        = number
   default     = 1
 }
+# flink는 실행시켜 두어야만 실제 처리가 됨
+# true : 인프라 적용되면 -> 실행 -> 실습 편의상 설정
+# false : 실제 사용 시 적용
 variable "flink_start_application" {
   description = "Whether Terraform should start the Managed Flink application"
   type        = bool
-  default     = false
+  default     = true
+}
+# flink를 가동한 후 입력쪽(브론즈 방향) kinesis에서 데이터 읽을 때 어디서부터 처리할 것인가? 설정
+# 데이터는 계속해서 전송 중 -> 추후 flink 가동 -> 
+# 가동 전에 도달한 데이터도 처리할 것인가? flink 가동 이후 도착한 데이터만 처리할 것인가?
+# LATEST : flink 가동 후 들어오는 데이터만 처리
+# TRIM_HORIZON : kinesis에 남아있는 과거 로그 데이터 모두 처리 -> 재처리/테스트/전체 데이터(이전) 처리
+
+variable "flink_source_init_position" {
+  description = "flink가 데이터 처리 시 입력원쪽의 어디서부터 처리할 것인가 설정"
+  type        = string
+  default     = "LATEST"
+
+  # 변수의 값으로 올 수 있는 내용들을 제약
+  validation {
+    # 오직 2가지만 허가됨
+    condition     = contains([
+      "LATEST", 
+      "TRIM_HORIZON"
+    ], var.flink_source_init_position)
+    error_message = "flink_source_init_position is only LATEST or TRIM_HORIZON"
+  }
 }
