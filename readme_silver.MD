@@ -1,24 +1,24 @@
 # 개요
-- Bronze (raw 데이터 저장, 모은 단위 중요) 
-  - log generator -> kinesis -> firehose(1Mib/60s) -> s3 bronze (raw data, GZIP)
-- Silver (raw 데이터 -> 정제/전처리 등 데이터 조작 -> 저장)
-  - Streaming Ingestion -> `Streaming Processing + Medalion Architecture`
+- Bronze (raw 데이터 저장, 모은 단위 중요)
+  - log generator => kinesis => firehose(1Mib/60s) => s3 bronze (raw data, GZIP)
+- Silver (raw 데이터 -> 정제/전처리등 데이터 조작 -> 저장)
+  - Streamming Ingestion => `Streamming Processing + Medalion Architecture`
   - step 1
-    - log generator -> kinesis(input) -> flink(자바, 파이썬(pyflink), pom.xml, maven) -> kinesis(output) -> firehose -> s3 silver
+    - log generator => kinesis(input) => flink(자바,파이썬(pyflink), pom.xml,maven) => kinesis(outut) => firehose => s3 silver
+      - `flink, kinesis(outut), firehose 3개 리소스` 생성
+      - s3 silver : 기존 버킷 하위에 구성
+        - jsonl 저장 -> GZIP 저장
+        - parquet 저장 -> Glue 스키마 구성하여 연동 
   - step 2
-    - log generator -> kinesis(input) -> lambda -> kinesis(output) -> firehose -> s3 silver
-    - `flink, kinesis(output), firehose 3개 리소스` 생성
-    - s3 silver : 기존 버킷 하위에 구성
-      - jsonl 저장 -> GZIP 저장
-      - parquet 저장 -> Glue 스키마 구성하여 연동
+    - log generator => kinesis(input) => lambda => kinesis(outut) => firehose => s3 silver
 
 # Flink
 - 실시간으로 스트리밍 데이터에서 실행 가능한 분석 정보를 확보
-  - 실시간 데이터를 실시간으로 전처리/정제 등 작업 가능 -> 거의 지연 없다
-- 실시간일 필요 없다 -> Airflow or Step Function(AWS) 이용하여 Batch Processing 처리
-- Silver 단계로 저장하는 방법 
-  - [v] 실시간 -> flink, lambda
-  - 배치 -> Airflow or Step Function(AWS)
+  - 실시간 데이터를 실시간으로 전처리/정제등 작업 가능 -> 거의 지연 없다
+- 실시간일 필요 없다 => Airlfow or Step Function(AWS) 이용하여 Batch Processing 처리
+- Siiver 단계로 저장하는 방법
+  - [v]실시간 -> flink, lambda
+  - 배치   -> Airlfow or Step Function(AWS)
 
 - 특징
   - 실시간 스트림 처리: Kinesis에서 들어오는 데이터를 계속 읽으면서 즉시 처리
@@ -30,6 +30,7 @@
   - `대용량 처리에 적합`: 지속적인 고속 이벤트 처리에 Lambda보다 유리
   - 복잡한 처리 가능: 필터링, 변환, 집계, 조인, 이상 탐지 등에 적합
 
+
 # 데이터 저장소
 ```
 S3 Bucket
@@ -39,15 +40,16 @@ S3 Bucket
 │   └── year=.../month=.../day=.../hour=...
 ├── flink/
 │   └── applications/
-│       └── flink-silver-xxxxx.zip <- flink 처리를 수행하는 앱 (*.py, pom.xml, *.jar)
+│       └── flink-silver-xxxxx.zip <- flink 처리를 수행하는 앱(*.py, pom.xml, *.jar)
 └── errors/
     ├── bronze/
     │   └── ...
     └── silver/
         └── ...
+
 ```
 
-# 구조
+# 구조 
 - 브론즈 유지 및 일부 수정
 - 실버 레이어 추가 kinesis(브론즈) 공급자, flink는 소비자 관점
 ```
@@ -68,7 +70,6 @@ Kinesis Raw (2가지 방향성으로 전송)
 ```
 
 # 인프라 수정
-## 종합
 
 | 구분         | 파일              | 변경 내용                                            |
 | ---------- | --------------- | ------------------------------------------------ |
@@ -81,3 +82,21 @@ Kinesis Raw (2가지 방향성으로 전송)
 | **신규**     | `flink.tf`      | Managed Flink + `flink/`에 코드 업로드                 |
 | **신규**     | `flink-logs.tf` | Flink CloudWatch 로그                              |
 | **수정**     | `outputs.tf`    | Silver/Flink 관련 Output 추가                        |
+
+
+# flink 앱 구성
+- 구성
+```
+flink/
+├── app/
+│   ├── main.py
+│   └── transform.py
+│
+├── assembly/
+│   └── assembly.xml
+│
+├── application_properties.json
+├── pom.xml
+├── README.md
+└── .gitignore
+```
