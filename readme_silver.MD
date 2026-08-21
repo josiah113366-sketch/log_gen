@@ -7,6 +7,10 @@
     - log generator -> kinesis(input) -> flink(자바, 파이썬(pyflink), pom.xml, maven) -> kinesis(output) -> firehose -> s3 silver
   - step 2
     - log generator -> kinesis(input) -> lambda -> kinesis(output) -> firehose -> s3 silver
+    - `flink, kinesis(output), firehose 3개 리소스` 생성
+    - s3 silver : 기존 버킷 하위에 구성
+      - jsonl 저장 -> GZIP 저장
+      - parquet 저장 -> Glue 스키마 구성하여 연동
 
 # Flink
 - 실시간으로 스트리밍 데이터에서 실행 가능한 분석 정보를 확보
@@ -25,3 +29,20 @@
   - Exactly-once 처리 지원: 중복이나 누락을 최소화하는 신뢰성 높은 스트림 처리 가능
   - `대용량 처리에 적합`: 지속적인 고속 이벤트 처리에 Lambda보다 유리
   - 복잡한 처리 가능: 필터링, 변환, 집계, 조인, 이상 탐지 등에 적합
+
+# 데이터 저장소
+```
+S3 Bucket
+├── bronze/
+│   └── year=.../month=.../day=.../hour=...
+├── silver/
+│   └── year=.../month=.../day=.../hour=...
+├── flink/
+│   └── applications/
+│       └── flink-silver-xxxxx.zip
+└── errors/
+    ├── bronze/
+    │   └── ...
+    └── silver/
+        └── ...
+```
