@@ -101,7 +101,7 @@ variable "silver_kinesis_shard_count" {
 }
 
 # kinesis에서 미전송된 데이터 보관 기간
-variable "flink_kinesis_retention_hour" {
+variable "silver_kinesis_retention_hour" {
   description = "KDS's retention period in hours"
   type        = number
   default     = 24
