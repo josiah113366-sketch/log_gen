@@ -22,7 +22,7 @@ locals {
 # 추가되는 리소스명 정의
 locals {
   silver_kinesis_stream_name = "${var.project_name}-silver-kinesis"
-  silver_firehose_name = "${var.project_name}-silver-firehose"
-  silver_application_name = "${var.project_name}-silver-flink"
-  silver_log_group_name = "/aws/kinesis-analysis/${var.project_name}-silver-flink"
+  silver_firehose_name       = "${var.project_name}-silver-firehose"
+  silver_application_name    = "${var.project_name}-silver-flink"
+  silver_log_group_name      = "/aws/kinesis-analysis/${var.project_name}-silver-flink"
 }
